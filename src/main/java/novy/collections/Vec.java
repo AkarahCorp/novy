@@ -4,8 +4,10 @@ import novy.util.Option;
 
 import java.util.ArrayList;
 
-public class Vec<T> {
+public final class Vec<T> {
     ArrayList<T> inner = new ArrayList<>();
+
+    private Vec() {}
 
     @SafeVarargs
     public static <T> Vec<T> create(T... arguments) {
