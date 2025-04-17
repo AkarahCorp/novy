@@ -1,8 +1,5 @@
 package novy.util;
 
-import java.util.function.Function;
-import java.util.function.Supplier;
-
 public sealed interface Result<T, E extends Exception> {
     record Ok<T, E extends Exception>(T value) implements Result<T, E> {}
     record Err<T, E extends Exception>(E value) implements Result<T, E> {}
@@ -15,22 +12,22 @@ public sealed interface Result<T, E extends Exception> {
         return new Err<>(value);
     }
 
-    static <T> Result<T, Exception> tryFunction(Supplier<T> supplier) {
+    static <T> Result<T, Exception> tryFunction(Functions.F0To1<T> supplier) {
         try {
-            return Result.ok(supplier.get());
+            return Result.ok(supplier.apply());
         } catch (Exception e) {
             return Result.err(e);
         }
     }
 
-    default <U> Result<U, E> map(Function<T, U> function) {
+    default <U> Result<U, E> map(Functions.F1To1<T, U> function) {
         return switch (this) {
             case Ok(T value) -> Result.ok(function.apply(value));
             case Err(E value) -> Result.err(value);
         };
     }
 
-    default <F extends Exception> Result<T, F> mapErr(Function<E, F> function) {
+    default <F extends Exception> Result<T, F> mapErr(Functions.F1To1<E, F> function) {
         return switch (this) {
             case Ok(T value) -> Result.ok(value);
             case Err(E value) -> Result.err(function.apply(value));
@@ -41,6 +38,13 @@ public sealed interface Result<T, E extends Exception> {
         return switch(this) {
             case Ok(T value) -> value;
             case Err(E value) -> throw new RuntimeException(value);
+        };
+    }
+
+    default Option<T> ok() {
+        return switch(this) {
+            case Ok(T value) -> Option.of(value);
+            case Err(E value) -> Option.empty();
         };
     }
 }

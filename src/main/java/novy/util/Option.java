@@ -2,9 +2,6 @@ package novy.util;
 
 import java.util.NoSuchElementException;
 import java.util.function.Consumer;
-import java.util.function.Function;
-import java.util.function.Predicate;
-import java.util.function.Supplier;
 
 public sealed interface Option<T> {
     record Some<T>(T value) implements Option<T> { }
@@ -33,38 +30,38 @@ public sealed interface Option<T> {
         return this;
     }
 
-    default <U> Option<U> map(Function<T, U> function) {
+    default <U> Option<U> map(Functions.F1To1<T, U> function) {
         return switch(this) {
             case Some<T>(T value) -> Option.of(function.apply(value));
             case None<T> ignored -> Option.empty();
         };
     }
 
-    default <U> Option<U> and(Supplier<Option<U>> other) {
+    default <U> Option<U> and(Functions.F0To1<Option<U>> other) {
         return switch (this) {
-            case Some<T>(T value) -> other.get();
+            case Some<T>(T ignored) -> other.apply();
             case None<T> ignored -> Option.empty();
         };
     }
 
     default <U> Option<U> and(Option<U> other) {
         return switch (this) {
-            case Some<T>(T value) -> other;
+            case Some<T>(T ignored) -> other;
             case None<T> ignored -> Option.empty();
         };
     }
 
-    default <U> Option<U> flatMap(Function<T, Option<U>> function) {
+    default <U> Option<U> flatMap(Functions.F1To1<T, Option<U>> function) {
         return switch (this) {
             case Some<T>(T value) -> function.apply(value);
             case None<T> ignored -> Option.empty();
         };
     }
 
-    default Option<T> filter(Predicate<T> predicate) {
+    default Option<T> filter(Functions.F1To1<T, Boolean> predicate) {
         return switch (this) {
             case Some<T>(T value) -> {
-                if(!predicate.test(value)) {
+                if(!predicate.apply(value)) {
                     yield Option.empty();
                 }
                 yield this;
@@ -73,10 +70,10 @@ public sealed interface Option<T> {
         };
     }
 
-    default Option<T> or(Supplier<Option<T>> other) {
+    default Option<T> or(Functions.F0To1<Option<T>> other) {
         return switch (this) {
             case Some<T>(T value) -> Option.of(value);
-            case None<T> ignored -> other.get();
+            case None<T> ignored -> other.apply();
         };
     }
 
@@ -84,6 +81,13 @@ public sealed interface Option<T> {
         return switch (this) {
             case Some<T>(T value) -> Option.of(value);
             case None<T> ignored -> other;
+        };
+    }
+
+    default <E extends Exception> Result<T, E> okOr(E e) {
+        return switch(this) {
+            case Some<T>(T value) -> Result.ok(value);
+            case None<T> ignored -> Result.err(e);
         };
     }
 }
