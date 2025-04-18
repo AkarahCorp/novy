@@ -8,16 +8,10 @@ public class ChannelTest {
     public void crossThread() throws InterruptedException {
         var channel = Channel.<Integer>create();
 
-        var sender = channel.a();
-        var receiver = channel.b();
-
-        var t1 = Thread.ofVirtual().start(() -> {
-            sender.send(10);
-        });
+        var t1 = Thread.ofVirtual().start(() -> channel.send(10));
 
         var t2 = Thread.ofVirtual().start(() -> {
-            var value = receiver.receive();
-            assert value == 10;
+            assert channel.receive() == 10;
         });
 
         t1.join();
