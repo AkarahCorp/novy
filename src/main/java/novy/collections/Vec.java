@@ -1,5 +1,6 @@
 package novy.collections;
 
+import novy.util.Fn;
 import novy.util.Option;
 
 import java.util.ArrayList;
@@ -61,5 +62,11 @@ public final class Vec<T> {
             vec.push(this.inner.get(i));
         }
         return vec;
+    }
+
+    public void forEach(Fn.F1<T, Fn.NoResult> function) {
+        for(var element : this.inner) {
+            function.apply(element);
+        }
     }
 }

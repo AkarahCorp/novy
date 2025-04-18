@@ -1,6 +1,6 @@
 package util;
 
-import novy.util.Mutex;
+import novy.cell.Mutex;
 import org.junit.Test;
 
 public class MutexTest {

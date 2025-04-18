@@ -1,6 +1,6 @@
 package novy.collections;
 
-import novy.util.Functions;
+import novy.util.Fn;
 import novy.util.Option;
 import novy.util.Tuple;
 
@@ -67,14 +67,14 @@ public final class HashMap<K, V> {
         return entries;
     }
 
-    public HashMap<K, V> map(K key, Functions.F2To1<K, V, V> function) {
+    public HashMap<K, V> map(K key, Fn.F2<K, V, V> function) {
         if(this.inner.containsKey(key)) {
             this.inner.put(key, function.apply(key, this.inner.get(key)));
         }
         return this;
     }
 
-    public HashMap<K, V> map(Functions.F2To1<K, V, V> function) {
+    public HashMap<K, V> map(Fn.F2<K, V, V> function) {
         this.inner.replaceAll((k, v) -> function.apply(k, this.inner.get(k)));
         return this;
     }

@@ -30,14 +30,14 @@ public sealed interface Option<T> {
         return this;
     }
 
-    default <U> Option<U> map(Functions.F1To1<T, U> function) {
+    default <U> Option<U> map(Fn.F1<T, U> function) {
         return switch(this) {
             case Some<T>(T value) -> Option.of(function.apply(value));
             case None<T> ignored -> Option.empty();
         };
     }
 
-    default <U> Option<U> and(Functions.F0To1<Option<U>> other) {
+    default <U> Option<U> and(Fn.F0<Option<U>> other) {
         return switch (this) {
             case Some<T>(T ignored) -> other.apply();
             case None<T> ignored -> Option.empty();
@@ -51,14 +51,14 @@ public sealed interface Option<T> {
         };
     }
 
-    default <U> Option<U> flatMap(Functions.F1To1<T, Option<U>> function) {
+    default <U> Option<U> flatMap(Fn.F1<T, Option<U>> function) {
         return switch (this) {
             case Some<T>(T value) -> function.apply(value);
             case None<T> ignored -> Option.empty();
         };
     }
 
-    default Option<T> filter(Functions.F1To1<T, Boolean> predicate) {
+    default Option<T> filter(Fn.F1<T, Boolean> predicate) {
         return switch (this) {
             case Some<T>(T value) -> {
                 if(!predicate.apply(value)) {
@@ -70,7 +70,7 @@ public sealed interface Option<T> {
         };
     }
 
-    default Option<T> or(Functions.F0To1<Option<T>> other) {
+    default Option<T> or(Fn.F0<Option<T>> other) {
         return switch (this) {
             case Some<T>(T value) -> Option.of(value);
             case None<T> ignored -> other.apply();

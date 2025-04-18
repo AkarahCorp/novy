@@ -1,4 +1,6 @@
-package novy.util;
+package novy.cell;
+
+import novy.util.Fn;
 
 public class Cell<T> {
     T inner;
@@ -15,7 +17,7 @@ public class Cell<T> {
         return this.inner;
     }
 
-    public Cell<T> map(Functions.F1To1<T, T> function) {
+    public Cell<T> map(Fn.F1<T, T> function) {
         this.inner = function.apply(this.inner);
         return this;
     }

@@ -1,4 +1,6 @@
-package novy.util;
+package novy.cell;
+
+import novy.util.Fn;
 
 public class Mutex<T> {
     T inner;
@@ -11,7 +13,7 @@ public class Mutex<T> {
         return new Mutex<>(inner);
     }
 
-    public Mutex<T> map(Functions.F1To1<T, T> function) {
+    public Mutex<T> map(Fn.F1<T, T> function) {
         synchronized (this) {
             this.inner = function.apply(this.inner);
         }

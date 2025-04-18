@@ -12,7 +12,7 @@ public sealed interface Result<T, E extends Exception> {
         return new Err<>(value);
     }
 
-    static <T> Result<T, Exception> tryFunction(Functions.F0To1<T> supplier) {
+    static <T> Result<T, Exception> tryFunction(Fn.F0<T> supplier) {
         try {
             return Result.ok(supplier.apply());
         } catch (Exception e) {
@@ -20,14 +20,14 @@ public sealed interface Result<T, E extends Exception> {
         }
     }
 
-    default <U> Result<U, E> map(Functions.F1To1<T, U> function) {
+    default <U> Result<U, E> map(Fn.F1<T, U> function) {
         return switch (this) {
             case Ok(T value) -> Result.ok(function.apply(value));
             case Err(E value) -> Result.err(value);
         };
     }
 
-    default <F extends Exception> Result<T, F> mapErr(Functions.F1To1<E, F> function) {
+    default <F extends Exception> Result<T, F> mapErr(Fn.F1<E, F> function) {
         return switch (this) {
             case Ok(T value) -> Result.ok(value);
             case Err(E value) -> Result.err(function.apply(value));
